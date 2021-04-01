@@ -13,21 +13,20 @@ Réalisation d'un serveur de chat :
 - CENCI Thomas
 
 ## Utilisation
-Client :
-1. `npm i`
-2. `ionic server`
+
 
 Serveur :
-1. `npm i`
+1. Run mongodb
 2. Run redis server
 3. `node server.js`
 
 ## TO DO
-- Backend pour les messages et conversation
 - Récupération des users avec Redis
+- Analyses
+- Replicaset
 
 ## DONE
 - Gestion des users
-- Début de gestion des conversations (sans tests)
+- Gestion des messages
 
 Code source : https://github.com/Applelo/Socket.io-Room-Chat
