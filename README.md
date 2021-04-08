@@ -1,40 +1,25 @@
-# Socket.io : Chat
+# Chatapp
 
-Cette application reprend les sources du tutoriel présent sur le blog [bini.io](http://blog.bini.io) :
+## Mise en route
 
-* [Partie 1](http://blog.bini.io/developper-une-application-avec-socket-io/)
-* [Partie 2](http://blog.bini.io/developper-un-chat-avec-socket-io-partie-2/)
-* [Partie 3](http://blog.bini.io/developper-un-chat-avec-socket-io-partie-3/)
+### Lancement serveurs MongoDB
+*Sous réserve d'avoir créé une base MongoDB et son replicaSet*
 
-Ce tutoriel est lui même une adaptation du [tutoriel officiel](http://socket.io/get-started/chat/) de socket.io.
+    ./bin/mongod --port 27017 --dbpath data_chat --replSet rs0
 
-Cette version ajoute les fonctionnalités suivantes par rapport à la version du tutoriel officiel :
+    ./bin/mongod --port 27018 --dbpath data_chat_rs1 --replSet rs0
 
-* Support des noms d'utilisateurs
-* Affichage d'un message lors de la connexion/déconnexion d'un utilisateur
-* Affichage de la liste des utilisateurs connectés
-* Conservation d'un historique des messages
-* Affichage du texte "typing" à côté du nom des utilisateurs en train de saisir un message
+### Lancement serveur redis
 
-## Installation
+    redis-server
 
-Si vous n'avez pas bower d'installé sur votre machine, installez-le au préalable de la façon suivante :
-```
-npm install -g bower
-```
+### Lancement application
 
-Pour installer l'application, téléchargez les sources (zip ou git clone) et exécutez la commande suivante depuis la racine du projet.
-```
-npm install
-bower install
-```
+    node server.js
 
-## Démarrer l'application
+## Source
+[https://blog.bini.io/developper-une-application-avec-socket-io/](https://blog.bini.io/developper-une-application-avec-socket-io/)
 
-Pour démarrer l'application, exécutez la commande suivante depuis la racine du projet.
-```
-node server
-```
-
-L'application est désormais accesssible à l'url **http://localhost:3000/**.
-
+## Contributeurs
+- Thomas Cenci
+- Rémi Gosselin
