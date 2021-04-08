@@ -1,32 +1,40 @@
-# Projet chat app
+# Socket.io : Chat
 
-## Consignes
-Réalisation d'un serveur de chat :
-- Connaître quels sont les utilisateurs connectés et les afficher (Redis)
-- Stocker l'ensemble des messages (MongoDB)
-- Utiliser le ReplicaSet pour permettre une meilleure tolérance aux pannes
-- Pouvoir afficher une conversation précédente entre deux utilisateurs
-- Sortir des requêtes pertinentes : utilisateur le plus sollicité, celui qui communique le plus, etc.
+Cette application reprend les sources du tutoriel présent sur le blog [bini.io](http://blog.bini.io) :
 
-## Contributors
-- GOSSELIN Rémi
-- CENCI Thomas
+* [Partie 1](http://blog.bini.io/developper-une-application-avec-socket-io/)
+* [Partie 2](http://blog.bini.io/developper-un-chat-avec-socket-io-partie-2/)
+* [Partie 3](http://blog.bini.io/developper-un-chat-avec-socket-io-partie-3/)
 
-## Utilisation
+Ce tutoriel est lui même une adaptation du [tutoriel officiel](http://socket.io/get-started/chat/) de socket.io.
 
+Cette version ajoute les fonctionnalités suivantes par rapport à la version du tutoriel officiel :
 
-Serveur :
-1. Run mongodb
-2. Run redis server
-3. `node server.js`
+* Support des noms d'utilisateurs
+* Affichage d'un message lors de la connexion/déconnexion d'un utilisateur
+* Affichage de la liste des utilisateurs connectés
+* Conservation d'un historique des messages
+* Affichage du texte "typing" à côté du nom des utilisateurs en train de saisir un message
 
-## TO DO
-- Récupération des users avec Redis
-- Analyses
-- Replicaset
+## Installation
 
-## DONE
-- Gestion des users
-- Gestion des messages
+Si vous n'avez pas bower d'installé sur votre machine, installez-le au préalable de la façon suivante :
+```
+npm install -g bower
+```
 
-Code source : https://github.com/Applelo/Socket.io-Room-Chat
+Pour installer l'application, téléchargez les sources (zip ou git clone) et exécutez la commande suivante depuis la racine du projet.
+```
+npm install
+bower install
+```
+
+## Démarrer l'application
+
+Pour démarrer l'application, exécutez la commande suivante depuis la racine du projet.
+```
+node server
+```
+
+L'application est désormais accesssible à l'url **http://localhost:3000/**.
+

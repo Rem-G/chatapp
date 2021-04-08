@@ -5,7 +5,9 @@ var io = require('socket.io')(http);
 var i;
 
 var MongoClient = require('mongodb').MongoClient;
-
+const uri = "mongodb://localhost:27017,localhost:27018/chat?replicaSet=rs0";
+const redis = require("redis");
+const client_redis = redis.createClient();
 
 /**
  * Gestion des requêtes HTTP des utilisateurs en leur renvoyant les fichiers du dossier 'public'
@@ -41,6 +43,16 @@ io.on('connection', function (socket) {
     socket.emit('user-login', users[i]);
   }
 
+  /**
+   * Tentative de visualisation des users connecté via Redis
+   /
+  // client_redis.keys("", (err, keys) => {
+  //   keys.forEach(key => {
+  //     console.log(key);
+  //     socket.emit('user-login', key);
+  //   });
+  // });
+
   /** 
    * Emission d'un événement "chat-message" pour chaque message de l'historique
    */
@@ -62,6 +74,8 @@ io.on('connection', function (socket) {
         text: 'User "' + loggedUser.username + '" disconnected',
         type: 'logout'
       };
+      client_redis.del(loggedUser.username);
+
       socket.broadcast.emit('service-message', serviceMessage);
       // Suppression de la liste des connectés
       var userIndex = users.indexOf(loggedUser);
@@ -84,12 +98,13 @@ io.on('connection', function (socket) {
    * Connexion d'un utilisateur via le formulaire :
    */
   socket.on('user-login', function (user, callback) {
-    MongoClient.connect("mongodb://localhost:27017/chat", function(connect_err, client) {
+
+    MongoClient.connect(uri, function(connect_err, client) {
       const db = client.db("chat");
 
-      db.collection("users").find({username: user.username}).toArray(function(user_err, user){
-        if (user_err || user.length == 0){
-          db.collection("users").insertOne({username: user.username}, function(insert_err, insert_user){
+      db.collection("users").find({username: user.username}).toArray(function(user_err, usr){
+        if (user_err || usr.length == 0){
+          db.collection("users").insertOne({username: user.username, inscription: Date.now()}, function(insert_err, insert_user){
             if (insert_err){
               console.log(insert_err);
             }
@@ -99,10 +114,9 @@ io.on('connection', function (socket) {
 
       db.collection("messages").find({$or: [{sender: user.username}, {receivers: user.username}]}, function(req_err, messages){
         messages.forEach(msg => {
-          io.emit('chat-message', {username: msg.sender, text: msg.message});
+          socket.emit('chat-message', {username: msg.sender, text: msg.message});
         })
       });
-
     });
 
     // Vérification que l'utilisateur n'existe pas
@@ -115,7 +129,10 @@ io.on('connection', function (socket) {
     if (user !== undefined && userIndex === -1) { // S'il est bien nouveau
       // Sauvegarde de l'utilisateur et ajout à la liste des connectés
       loggedUser = user;
+      client_redis.set(loggedUser.username, Date.now());
+
       users.push(loggedUser);
+      console.log(users);
       // Envoi et sauvegarde des messages de service
       var userServiceMessage = {
         text: 'You logged in as "' + loggedUser.username + '"',
@@ -130,8 +147,7 @@ io.on('connection', function (socket) {
       messages.push(broadcastedServiceMessage);
       // Emission de 'user-login' et appel du callback
       io.emit('user-login', loggedUser);
-      callback(true);
-    } else {
+      callback(true);    } else {
       callback(false);
     }
   });
@@ -139,14 +155,14 @@ io.on('connection', function (socket) {
   /**
    * Réception de l'événement 'chat-message' et réémission vers tous les utilisateurs
    */
-  socket.on('chat-message', function (message) {
+  socket.on('chat-message', function (message) {  
     // On ajoute le username au message et on émet l'événement
     message.username = loggedUser.username;
     io.emit('chat-message', message);
     // Sauvegarde du message
 
 
-    MongoClient.connect("mongodb://localhost:27017/chat", function(connect_err, client) {
+    MongoClient.connect(uri, function(connect_err, client) {
       const db = client.db("chat");
       let receivers = [];
       
